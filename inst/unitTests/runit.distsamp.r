@@ -151,6 +151,7 @@ test.distsamp.getP <- function() {
                      tol=1e-5)
   checkEqualsNumeric(getP(unif)[1,], c(0.1111111, 0.3333333, 0.5555556), 
                      tol=1e-5)
-  checkEqualsNumeric(getP(haz)[1,], c(0.04946332, 0.02826854, 0.01589744), 
+  #Slight differences between R and C results due to integration
+  checkEqualsNumeric(getP(haz)[1,], c(0.04942781, 0.02824432, 0.01588756), 
                      tol=1e-5)
 }

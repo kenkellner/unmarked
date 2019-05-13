@@ -1,9 +1,10 @@
 #ifndef _unmarked_NLL_GDISTSAMP_H
 #define _unmarked_NLL_GDISTSAMP_H
 
-#include "R_ext/Applic.h"
-#include "detfuns.h"
 #include <RcppArmadillo.h>
+//https://github.com/RcppCore/RcppArmadillo/issues/116
+#define NDEBUG 1
+#include "detfuns.h"
 
 RcppExport SEXP nll_gdistsamp(SEXP beta_, SEXP mixture_, SEXP keyfun_, SEXP survey_,
     SEXP Xlam_, SEXP Xlam_offset_, SEXP A_, SEXP Xphi_, SEXP Xphi_offset_, 

@@ -51,26 +51,17 @@ vec p_exp(const double& rate, const std::string& survey, const vec& db,
 
   } else if(survey == "point"){
     //Integration settings
-    double *ex;
-    ex = (double *) R_alloc(2, sizeof(double)); //parameters
-    ex[0] = rate;
-    ex[1] = 0.0;
-    double epsabs = rel_tol;
-    int limit = 100;
-    int lenw = 400;
-    int last = 0;
-    int iwork[100];
-    double work[400];
-    double int_ = 0.0; //integration result
-    double abserr = 0.0;
-    int neval = 0;
-    int ier=0;
+    DetExp f(rate, 1);
+    double eps_rel = rel_tol;
+    double eps_abs = rel_tol;
+    double err_est;
+    int err_code;
+    int subdiv = 100;
     for(int j=0; j<J; j++){
       double lower = db(j);
       double upper = db(j+1);
-	    Rdqags(grexp, ex, &lower, &upper, &epsabs, &rel_tol, &int_,
-		    &abserr, &neval, &ier, &limit, &lenw, &last, iwork,
-		    work);
+      double int_ = Numer::integrate(f, lower, upper, err_est, err_code,
+          subdiv, eps_abs, eps_rel);
       p(j) = int_ * 2 * M_PI / a(j);
     }
   }
@@ -84,38 +75,29 @@ vec p_hazard(const double& shape, const double& scale, const std::string& survey
   vec p(J);
 
   //Integration settings
-  double *ex;
-  ex = (double *) R_alloc(2, sizeof(double)); //parameters
-  ex[0] = shape;
-  ex[1] = scale;
-  double epsabs = rel_tol;
-  int limit = 100;
-  int lenw = 400;
-  int last = 0;
-  int iwork[100];
-  double work[400];
-  double int_ = 0.0; //integration result
-  double abserr = 0.0;
-  int neval = 0;
-  int ier=0;
+  double err_est;
+  int err_code;
+  double eps_rel = rel_tol;
+  double eps_abs = rel_tol;
+  int subdiv = 100;
 
   if(survey == "line"){
+    DetHaz f(shape, scale, 0);
     for(int j=0; j<J; j++){
       double lower = db(j);
       double upper = db(j+1);
-	    Rdqags(gxhaz, ex, &lower, &upper, &epsabs, &rel_tol, &int_,
-		    &abserr, &neval, &ier, &limit, &lenw, &last, iwork,
-		    work);
+      double int_ = Numer::integrate(f, lower, upper, err_est, err_code,
+          subdiv, eps_abs, eps_rel);
       p(j) = int_ / w(j);
     }
 
   } else if(survey == "point"){
+    DetHaz f(shape, scale, 1);
     for(int j=0; j<J; j++){
       double lower = db(j);
       double upper = db(j+1);
-	    Rdqags(grhaz, ex, &lower, &upper, &epsabs, &rel_tol, &int_,
-		    &abserr, &neval, &ier, &limit, &lenw, &last, iwork,
-		    work);
+      double int_ = Numer::integrate(f, lower, upper, err_est, err_code,
+          subdiv, eps_abs, eps_rel);
       p(j) = int_ * 2 * M_PI / a(j);
     }
   }
