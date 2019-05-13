@@ -26,7 +26,7 @@ vec p_halfnorm(const double& sigma, const std::string& survey,
     p = int_ / f0 / w;
 
   } else if(survey == "point"){
-    for (int j; j<J; j++){
+    for (int j=0; j<J; j++){
       double s2 = pow(sigma,2);
       double p1 = 1 - exp(-pow(db(j+1),2) / (2 * s2));
       double p2 = 1 - exp(-pow(db(j),2) / (2 * s2)); 
@@ -255,7 +255,7 @@ SEXP nll_gdistsamp(SEXP beta_, SEXP mixture_, SEXP keyfun_, SEXP survey_,
       }
     }
 
-    ll(m) = log(sum(f % g));
+    ll(m) = log(sum(f % g) + DOUBLE_XMIN);
   }
 
   return(wrap(-sum(ll)));
