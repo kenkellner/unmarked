@@ -5,7 +5,7 @@ occuMS <- function(detformulas, psiformulas, phiformulas=NULL, data,
 
   #Format input data-----------------------------------------------------------
   #Check data object
-  if(!class(data) == "unmarkedFrameOccuMS")
+  if(!inherits(data, "unmarkedFrameOccuMS"))
     stop("Data must be created with unmarkedFrameOccuMS()")
   
   #Check engine
@@ -192,12 +192,7 @@ occuMS <- function(detformulas, psiformulas, phiformulas=NULL, data,
 
   if(missing(starts)) starts <- rep(0, nP)
   fm <- optim(starts, nll, method=method, hessian = se, ...)
-  
-  if(se) {
-    tryCatch(covMat <- solve(fm$hessian),
-      error=function(x) stop(simpleError("Hessian is singular.
-        Try providing starting values or using fewer covariates.")))
-  } else { covMat <- matrix(NA, nP, nP) }
+  covMat <- invertHessian(fm, nP, se)
 
   fmAIC <- 2 * fm$value + 2 * nP
   #----------------------------------------------------------------------------
